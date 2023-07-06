@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Diagnostics;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -24,7 +23,18 @@ namespace Serialmote.Controllers
 
         public Serialmote(ILogger<Serialmote> logger)
         {
-            _logger = logger;
+            if (_serialPort == null || !_serialPort.IsOpen)
+            {
+                _serialPort = new SerialPortStream("COM4", 9600, 8, Parity.None, StopBits.One);
+                _serialPort.Open();
+                _serialPort.Close();
+
+                if (!_serialPort.IsOpen)
+                {
+                    _serialPort = new SerialPortStream("COM4", 115200, 8, Parity.None, StopBits.One);
+                    _serialPort.Open();
+                }
+            }
         }
 
         [HttpGet("{input}/{output}", Name = "Controller")]
@@ -105,15 +115,7 @@ namespace Serialmote.Controllers
                 return "Invalid input or output.";
             }
 
-            // Ensure the serial port is opened
-            if (_serialPort == null || !_serialPort.IsOpen)
-            {
-                _serialPort = new SerialPortStream("COM4", 9600, 8, Parity.None, StopBits.One);
-                _serialPort.Open();
-                _serialPort.Close();
-                _serialPort = new SerialPortStream("COM4", 115200, 8, Parity.None, StopBits.One);
-                _serialPort.Open();
-            }
+
 
             // Send the hex data to the serial port
             _serialPort.Write(hexData, 0, hexData.Length);

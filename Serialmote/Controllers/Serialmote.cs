@@ -21,21 +21,21 @@ namespace Serialmote.Controllers
         private readonly ILogger<Serialmote> _logger;
         private static SerialPortStream? _serialPort;
 
-        public Serialmote(ILogger<Serialmote> logger)
-        {
-            if (_serialPort == null || !_serialPort.IsOpen)
-            {
-                _serialPort = new SerialPortStream("COM4", 9600, 8, Parity.None, StopBits.One);
-                _serialPort.Open();
-                _serialPort.Close();
+ public Serialmote(ILogger<Serialmote> logger)
+{
+    if (_serialPort == null || !_serialPort.IsOpen)
+    {
+        _serialPort = new SerialPortStream("COM4", 9600, 8, Parity.None, StopBits.One);
+        _serialPort.Open();
+        _serialPort.Close();
 
-                if (!_serialPort.IsOpen)
-                {
-                    _serialPort = new SerialPortStream("COM4", 115200, 8, Parity.None, StopBits.One);
-                    _serialPort.Open();
-                }
-            }
+        if (!_serialPort.IsOpen)
+        {
+            _serialPort = new SerialPortStream("COM4", 115200, 8, Parity.None, StopBits.One);
+            _serialPort.Open();
         }
+    }
+}
 
         [HttpGet("{input}/{output}", Name = "Controller")]
         public string Get(string input, string output)

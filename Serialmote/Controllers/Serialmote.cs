@@ -11,13 +11,13 @@ namespace Serialmote.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class Serialmote : ControllerBase
+    public class SerialmoteController : BackgroundService
     {
 
         
         private static SerialPortStream? _serialPort;
 
- public Serialmote(ILogger<Serialmote> logger)
+ public SerialmoteController(ILogger<SerialmoteController> logger)
 {
     if (_serialPort == null || !_serialPort.IsOpen)
     {
@@ -122,7 +122,14 @@ namespace Serialmote.Controllers
             return response;
         }
 
-        
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
 
+
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+            }
+        }
     }
 }

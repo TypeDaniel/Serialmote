@@ -13,25 +13,43 @@ namespace Serialmote.Controllers
     [Route("[controller]")]
     public class SerialmoteController : BackgroundService
     {
-
-        
         private static SerialPortStream? _serialPort;
+        private readonly ILogger<SerialmoteController> _logger;
+        private readonly SerialSettings _serialSettings;
 
- public SerialmoteController(ILogger<SerialmoteController> logger)
-{
-    if (_serialPort == null || !_serialPort.IsOpen)
-    {
-        _serialPort = new SerialPortStream("COM4", 9600, 8, Parity.None, StopBits.One);
-        _serialPort.Open();
-        _serialPort.Close();
-
-        if (!_serialPort.IsOpen)
+        public SerialmoteController(ILogger<SerialmoteController> logger, SerialSettings serialSettings)
         {
-            _serialPort = new SerialPortStream("COM4", 115200, 8, Parity.None, StopBits.One);
-            _serialPort.Open();
+            _logger = logger;
+            _serialSettings = serialSettings;
+
+            if (_serialPort == null || !_serialPort.IsOpen)
+            {
+                
+                _serialPort = new SerialPortStream(
+                    _serialSettings.PortName,
+                    9600, 
+                    _serialSettings.DataBits,
+                    _serialSettings.Parity,
+                    _serialSettings.StopBits);
+
+                _serialPort.Open();
+                _serialPort.Close();
+
+                if (!_serialPort.IsOpen)
+                {
+                    _serialPort = new SerialPortStream(
+                        _serialSettings.PortName,
+                        115200, 
+                        _serialSettings.DataBits,
+                        _serialSettings.Parity,
+                        _serialSettings.StopBits);
+
+                    _serialPort.Open();
+                }
+            }
         }
-    }
-}
+
+
 
         [HttpGet("{input}/{output}", Name = "Controller")]
         public string Get(string input, string output)

@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add configuration
 var configuration = new ConfigurationBuilder()
-    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory) // Use the base directory of the application domain
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory) 
     .AddIniFile("settings.ini", optional: true, reloadOnChange: true)
     .Build();
 

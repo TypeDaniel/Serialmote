@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add configuration
 var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory) // Use the base directory of the application domain
     .AddIniFile("settings.ini", optional: true, reloadOnChange: true)
     .Build();
 
@@ -33,7 +33,7 @@ string port = configuration.GetSection("AppSettings")["Port"] ?? "5050";
 
 if (app.Environment.IsProduction())
 {
-    string url = $"https://localhost:{port}";
+    string url = $"http://localhost:{port}";
     app.Urls.Add(url);
 }
 
